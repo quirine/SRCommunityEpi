@@ -46,8 +46,18 @@ Data15 <- rbind(newrow,Data15)  # adding an extra NULL row to capture the instan
 # Derive Time to Event Data -----------------------------------------------
 
 SurvSR <- rbind(get.TTE(Data05,0.5), get.TTE(Data075,0.75), get.TTE(Data1,1.00), get.TTE(Data125,1.25), get.TTE(Data15,1.5))
-SurvSR <- upData(SurvSR, labels = c(ID = 'Mosquito id', TTE = 'Days at risk',Event = 'Died or survived',
+I <- which(SurvSR$TTE > con.time)
+SurvSR.init = SurvSR[-I,]
+SurvSR.con = SurvSR[I,]
+
+SurvSR.con <- upData(SurvSR.con, labels = c(ID = 'Mosquito id', TTE = 'Days at risk',Event = 'Died or survived',
                                     Treat = 'SR or control', Dose = 'Dosage relative to FAR',
                                     Group = 'lab batch'),
                  levels = list(Treat = list('control' = 0, 'SR' = 1),
                                Event = list('survived' = 0, 'died' = 1)))
+
+SurvSR.init <- upData(SurvSR.init, labels = c(ID = 'Mosquito id', TTE = 'Days at risk',Event = 'Died or survived',
+                                              Treat = 'SR or control', Dose = 'Dosage relative to FAR',
+                                              Group = 'lab batch'),
+                      levels = list(Treat = list('control' = 0, 'SR' = 1),
+                                    Event = list('survived' = 0, 'died' = 1)))

@@ -5,6 +5,7 @@ library(mgcv)
 library(hBayesDM)
 library(coda)
 library(ggplot2)
+library(Hmisc)
 
 # Set work directory -------------------------------------------------------
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to source file location (if working in RStudio)
@@ -55,11 +56,31 @@ foi.reduction = 1 - rel_foi(Coverages,mu.h,rho.h,alpha.h,tau,q.u*q.t.scaler.h,q.
 Coverages[ which.min(abs(foi.reduction-0.5)) ]
 HDIofMCMC(mcmc(temp), credMass = 0.95)
 
+# max effect of product
+foi.reduction.rep.bit = 1 - rel_foi(Coverages,mu=mu,rho,alpha,tau,q.t.scaler*q.u,q.u,g.t=g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc)
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,mu=Mu[ii],Rho[ii],Alpha[ii],tau,Q.t[ii]*q.u,q.u,g.t=G.T[ii],g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
+}
+temp = temp[order(temp[,length(Coverages)]),]
+HDIofMCMC(mcmc(1 - temp[,length(Coverages)]), credMass = 0.95 ); 
+foi.reduction.rep.bit[length(Coverages)]
+
 # max effect of product without lethality
 foi.reduction.rep.bit = 1 - rel_foi(Coverages,mu=0,rho,alpha,tau,q.t.scaler*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc)
 temp = numeric()
 for( ii in 1:num.draws){     
   temp = rbind(temp,rel_foi(Coverages,mu=0,Rho[ii],Alpha[ii],tau,Q.t[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
+}
+temp = temp[order(temp[,length(Coverages)]),]
+HDIofMCMC(mcmc(1 - temp[,length(Coverages)]), credMass = 0.95 ); 
+foi.reduction.rep.bit[length(Coverages)]
+
+# and for high dosage
+foi.reduction.rep.bit = 1 - rel_foi(Coverages,mu=0,rho.h,alpha.h,tau,q.t.scaler.h*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc.h)
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,mu=0,Rho.h[ii],Alpha.h[ii],tau,Q.t.h[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc.h[ii]))
 }
 temp = temp[order(temp[,length(Coverages)]),]
 HDIofMCMC(mcmc(1 - temp[,length(Coverages)]), credMass = 0.95 ); 
@@ -133,7 +154,7 @@ YLIMS = c(0,1.2)
 line.weight = 2
 index.l = round(0.025 * num.draws); 
 index.h = round(0.975 * num.draws); 
-cov.index = which(Coverages == 0.5)
+cov.index = which(Coverages == .5)
 
 pdf('Fig3.pdf',width=7.5,height=3)
 old.par <- par(mfrow=c(1,4),oma = c(5,4,4,2),
@@ -896,7 +917,3 @@ mtext('Relative FoI',2,line=2, outer = TRUE)
 
 dev.off()
 setwd(cd)
-
-
-
-

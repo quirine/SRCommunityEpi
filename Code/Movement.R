@@ -3,6 +3,7 @@ rm(list=ls())
 # load libraries ----------------------------------------------------------
 library(ggplot2)
 library(BayesianTools)
+library(coda)
 
 # set workdirectory -------------------------------------------------------
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to source file location (if working in RStudio)
@@ -69,3 +70,4 @@ HDIofMCMC(mcmc(Repellency[3,]),credMass = 0.95)
 #high
 1 - median(Expellency[3,])
 1 - HDIofMCMC(mcmc(Expellency[3,]),credMass = 0.95)
+

@@ -9,10 +9,18 @@ library(lattice)
 library(MASS)
 library(Hmisc)
 library(car)
+library(lmtest)
+library(binom)
+library(mgcv)
 
 # Set Work Directory ------------------------------------------------------
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to source file location (if working in RStudio)
 getwd()
+
+
+# Load source files -------------------------------------------------------
+source('BloodfeedingFunctions.R')
+source('LongevityFunctions.R')
 
 # Data loading and processing ---------------------------------------------
 BfData <- read.csv('../Data/SR_Bloodfeeding.csv')
@@ -21,7 +29,9 @@ BfData <- data.frame(BfData, Time.min)
 attach(BfData)
 
 # Plotting parameters -----------------------------------------------------
+num.draws = 10000
 Dosage <- c(seq(0,2,by=0.25))
+Dosage.small <- c(0,1,1.5)
 colorlist= colorRampPalette(c("lightcyan3", "darkorange","deeppink"))(length(Dosage))
 colorlist = c(rgb(0,0,0), colorlist)
 
@@ -41,10 +51,8 @@ multinomNLL1 = function(params,k_partial,k_full,k_non,N,dose,t){
   
   prob_part_nofull = prob_part * (1 - prob_full) 
   prob_non = (1 - prob_full) * (1 - prob_part)  
-#   test = prob_full + prob_part_nofull + prob_non
-#   print(test)
-
-    -sum(dmultinom(c(k_partial,k_full,k_non),prob=c(prob_part_nofull,
+  
+  -sum(dmultinom(c(k_partial,k_full,k_non),prob=c(prob_part_nofull,
                                                   prob_full,
                                                   prob_non),
                  size=NULL,log=TRUE))
@@ -53,12 +61,44 @@ multinomNLL1 = function(params,k_partial,k_full,k_non,N,dose,t){
 parnames(multinomNLL1) <- c("beta0_part", "beta1_part", "beta0_full", "beta1_full")
 
 # Fit Multinomial Models ------------------------------------------------------
+# without dose effect
+bf.nodose <- mle2(minuslogl = multinomNLL1, start = c( beta0_part = 7, beta1_part = 0.15, beta0_full = 7, beta1_full = 0.15),
+                  data = list(N = Initial, k_partial = Partial_Bloodfed, k_full = Full_Bloodfed, k_non = Non_Bloodfed, dose = rep(0,nrow(BfData)), t = Time.min))
 
+# with dose effect
 bf <- mle2(minuslogl = multinomNLL1, start = c( beta0_part = 7, beta1_part = 0.15, beta0_full = 7, beta1_full = 0.15),
            data = list(N = Initial, k_partial = Partial_Bloodfed, k_full = Full_Bloodfed, k_non = Non_Bloodfed, dose = Dose, t = Time.min))
 
+# for each dose separately
+ind = which(BfData$Dose == 0)
+bf.control <- mle2(minuslogl = multinomNLL1, start = c( beta0_part = 7, beta1_part = 0.15, beta0_full = 7, beta1_full = 0.15),
+                   data = list(N = Initial[ind], k_partial = Partial_Bloodfed[ind], k_full = Full_Bloodfed[ind], k_non = Non_Bloodfed[ind], dose = rep(0,length(ind)), t = Time.min[ind]))
 
-# Estimate Exponentials of Biting Time ------------------------------------
+ind = which(BfData$Dose == 1.0)
+bf.low <- mle2(minuslogl = multinomNLL1, start = c( beta0_part = 7, beta1_part = 0.15, beta0_full = 7, beta1_full = 0.15),
+               data = list(N = Initial[ind], k_partial = Partial_Bloodfed[ind], k_full = Full_Bloodfed[ind], k_non = Non_Bloodfed[ind], dose = rep(0,length(ind)), t = Time.min[ind]))
+
+ind = which(BfData$Dose == 1.5)
+bf.high <- mle2(minuslogl = multinomNLL1, start = c( beta0_part = 7, beta1_part = 0.15, beta0_full = 7, beta1_full = 0.15),
+                data = list(N = Initial[ind], k_partial = Partial_Bloodfed[ind], k_full = Full_Bloodfed[ind], k_non = Non_Bloodfed[ind], dose = rep(0,length(ind)), t = Time.min[ind]))
+
+
+# Likelihood-ratio tests on dose effects -------------------
+df <- 4 - 2
+L1 = -bf.nodose@details$value
+L2 = -bf@details$value
+teststat <- -2 * ( L1 - L2 )
+pchisq(teststat, df = df, lower.tail = FALSE)
+
+df <- (3*2) - 2
+L1 = -bf.nodose@details$value
+L2 = sum(-bf.control@details$value,
+         -bf.low@details$value,
+         -bf.high@details$value)
+teststat <- -2 * (L1 - L2)
+pchisq(teststat, df = df, lower.tail = FALSE)
+
+# Estimate Exponentials of Biting Time (with dose effect)------------------------------------
 # p-value dosage effect:
 summary(bf)@coef[c(2,4),4]
 
@@ -69,77 +109,174 @@ Rate.bf=Rate.full.bf + Rate.part.bf  # overall biting rate
 Prob.full.bf <- sapply(Dosage,function(x)pexp(seq(0,max(Time.min)),rate=1/(exp(bf@coef[3] + bf@coef[4] * x) ))) 
 Prob.part.bf <- sapply(Dosage,function(x)1 - (dpois(0,(1/(exp(bf@coef[1] + bf@coef[2] * x)) * seq(0,max(Time.min)))))) 
 Prob.part.nofull.bf <- Prob.part.bf * (1 - Prob.full.bf)   
-Prob.nobites.bf <- 1 - (Prob.full.bf + Prob.part.nofull.bf)  
+Prob.nobites.bf <- 1 - (Prob.full.bf + Prob.part.nofull.bf) 
+
+# Estimate Exponentials of Biting Time (by dosage)------------------------------------
+Rates.control <- get.feeding.rates(bf.control)
+Rates.low <- get.feeding.rates(bf.low)
+Rates.high <- get.feeding.rates(bf.high)
+
+RATES.control <- get.feeding.rates.uncertainty(bf.control, num.draws = num.draws )
+RATES.low <- get.feeding.rates.uncertainty(bf.low, num.draws = num.draws)
+RATES.high <- get.feeding.rates.uncertainty(bf.high, num.draws = num.draws)
+
+Probs.control <- get.feeding.probabilities.over.time(bf.control,time.vector = seq(0,max(Time.min)))
+Probs.low <- get.feeding.probabilities.over.time(bf.low,time.vector = seq(0,max(Time.min)))
+Probs.high <- get.feeding.probabilities.over.time(bf.high,time.vector = seq(0,max(Time.min)))
+
+# similarly with uncertainty
+PROBS.control <- get.feeding.probabilities.over.time.uncertainty(bf.control, time.vector = seq(0,max(Time.min)), num.draws = num.draws)
+PROBS.low <- get.feeding.probabilities.over.time.uncertainty(bf.low, time.vector = seq(0,max(Time.min)), num.draws = num.draws)
+PROBS.high <- get.feeding.probabilities.over.time.uncertainty(bf.high, time.vector = seq(0,max(Time.min)), num.draws = num.draws)
 
 # Outcomes for paper ------------------------------------------------------
 # time till blood feeding increased by:
-(1/Rate.bf[which(Dosage==1)]) / (1/Rate.bf[which(Dosage==0)]) - 1  # FAR 1
-(1/Rate.bf[which(Dosage==1.5)]) / (1/Rate.bf[which(Dosage==0)]) - 1  # FAR 1.5
+
+(1/Rates.low['Rate.overall']) / (1/Rates.control['Rate.overall']) - 1  # FAR 1
+HDIofMCMC( (1/RATES.low$Rate.overall) / (1/RATES.control$Rate.overall) - 1 ) # FAR 1
+
+(1/Rates.high['Rate.overall']) / (1/Rates.control['Rate.overall']) - 1  # FAR 1.5
+HDIofMCMC( (1/RATES.high$Rate.overall) / (1/RATES.control$Rate.overall) - 1 ) # FAR 1.5
+
+
 # mostly result from full blood feeds:
-(1/Rate.full.bf[which(Dosage==1)]) / (1/Rate.full.bf[which(Dosage==0)]) - 1  # FAR 1
-(1/Rate.full.bf[which(Dosage==1.5)]) / (1/Rate.full.bf[which(Dosage==0)]) - 1  # FAR 1.5
+(1/Rates.low['Rate.full']) / (1/Rates.control['Rate.full']) - 1  # FAR 1
+HDIofMCMC( (1/RATES.low$Rate.full) / (1/RATES.control$Rate.full) - 1 ) # FAR 1
+
+(1/Rates.high['Rate.full']) / (1/Rates.control['Rate.full']) - 1  # FAR 1.5
+HDIofMCMC( (1/RATES.high$Rate.full) / (1/RATES.control$Rate.full) - 1 ) # FAR 1.5
+
 # the partial biting rate increased by:
-1 - (1/Rate.part.bf[which(Dosage==1)]) / (1/Rate.part.bf[which(Dosage==0)])   # FAR 1
-1 - (1/Rate.part.bf[which(Dosage==1.5)]) / (1/Rate.part.bf[which(Dosage==0)])   # FAR 1.5
+1 - (1/Rates.low['Rate.part']) / (1/Rates.control['Rate.part'])  # FAR 1
+HDIofMCMC( 1 - (1/RATES.low$Rate.part) / (1/RATES.control$Rate.part) ) # FAR 1
 
-(Rate.bf[which(Dosage==1)]) / (Rate.bf[which(Dosage==0)])   # alpha FAR 1
-(Rate.bf[which(Dosage==1.5)]) / (Rate.bf[which(Dosage==0)])   # alpha FAR 1
+1 - (1/Rates.high['Rate.part']) / (1/Rates.control['Rate.part'])   # FAR 1.5
+HDIofMCMC( 1 - (1/RATES.high$Rate.part) / (1/RATES.control$Rate.part)) # FAR 1.5
 
-(Rate.full.bf[which(Dosage==1)]) / (Rate.full.bf[which(Dosage==0)])  # alpha.gc FAR 1
-(Rate.full.bf[which(Dosage==1.5)]) / (Rate.full.bf[which(Dosage==0)])  # alpha.gc FAR 1
+(Rates.low['Rate.overall']) / (Rates.control['Rate.overall'])  # alpha FAR 1
+HDIofMCMC ( RATES.low$Rate.overall / RATES.control$Rate.overall )
+(Rates.high['Rate.overall']) / (Rates.control['Rate.overall']) # alpha FAR 1.5
+HDIofMCMC ( RATES.high$Rate.overall / RATES.control$Rate.overall )
 
-save( 'bf', file = 'BloodFeeding.RData')
-save(list=ls(), file = 'BloodFeedingWorkSpace.RData')
+(Rates.low['Rate.full']) / (Rates.control['Rate.full'])  # alpha.gc FAR 1
+HDIofMCMC ( RATES.low$Rate.full / RATES.control$Rate.full )
+(Rates.high['Rate.full']) / (Rates.control['Rate.full']) # alpha.gc FAR 1.5
+HDIofMCMC ( RATES.high$Rate.full / RATES.control$Rate.full )
+
+# Table 2 -----------------------------------------------------------------
+
+MV.Coefs = rmvn(n=1e4, mu = bf.control@coef, V = bf.control@vcov)
+bf.control@coef['beta0_part']; HDIofMCMC(MV.Coefs[,1])
+bf.control@coef['beta0_full']; HDIofMCMC(MV.Coefs[,3])
+
+MV.Coefs = rmvn(n=1e4, mu = bf.low@coef, V = bf.low@vcov)
+bf.low@coef['beta0_part']; HDIofMCMC(MV.Coefs[,1])
+bf.low@coef['beta0_full']; HDIofMCMC(MV.Coefs[,3])
+
+MV.Coefs = rmvn(n=1e4, mu = bf.high@coef, V = bf.high@vcov)
+bf.high@coef['beta0_part']; HDIofMCMC(MV.Coefs[,1])
+bf.high@coef['beta0_full']; HDIofMCMC(MV.Coefs[,3])
+
+
+# Save --------------------------------------------------------------------
+
+objects.to.save = apropos('bf', ignore.case = F)
+save( list = objects.to.save, file = '../Input/BloodFeeding.RData')
+save(list=ls(), file = '../Input/BloodFeedingWorkSpace.RData')
 
 # Data Biting Probabilities with Data (Fig 2)---------------------------------------------------------------
-
+transparency = 0.2
+colors = Cs(black, darkorange, deeppink)
 pdf('Fig2.pdf',width=6,height=3)
 
 old.par <- par(mfrow=c(1,3),oma = c(5,4,4,2) + 0.1,
                mar = c(0,0,1,0) + 0.1)
-plot(seq(0,dim(Prob.full.bf)[1]-1),Prob.full.bf[,1],type = "l" ,
+plot(seq(0,nrow(Probs.control)-1),Probs.control[,'Prob.full'],type = "l" ,
      xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1)
-for (i in 2:length(Dosage)){
-  lines(seq(0,dim(Prob.full.bf)[1]-1),Prob.full.bf[,i], col=colorlist[i])
+temp = apply(PROBS.control$PROB.full, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1),Probs.low[,'Prob.full'],type = "l" ,
+      col=colorlist[which(Dosage==1)])
+temp = apply(PROBS.low$PROB.full, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1),Probs.high[,'Prob.full'],type = "l" ,
+      col=colorlist[which(Dosage==1.5)])
+temp = apply(PROBS.high$PROB.full, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
+
+# add data
+for (jj in c(0,1,1.5)){
+  Ind = which(Dose == jj)
+  Probs.temp = Full_Bloodfed[Ind]/Initial[Ind]
+  CIs = binom.confint(Full_Bloodfed[Ind], Initial[Ind], methods = 'exact')[,c('lower', 'upper')] 
+  points(Time.min[Ind],Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
+  for( ii in 1:length(Time.min[Ind])){
+    lines(rep(Time.min[Ind][ii],2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
+  }
 }
-Ind = which(Dose == 0)
-points(Time.min[Ind],Full_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==0)])
-Ind = which(Dose == 1)
-points(Time.min[Ind],Full_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==1)])
-Ind = which(Dose == 1.5)
-points(Time.min[Ind],Full_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==1.5)])
 
 mtext( bquote(bold("A")), side = 3, line = 0.1 ,at = 100,cex=1)
 mtext(side = 3, text = 'Fully blood-fed', line = 1.1, cex = .9, font = 4)
 
-plot(seq(0,dim(Prob.part.nofull.bf)[1]-1),Prob.part.nofull.bf[,1],type = "l" ,
-     xlab="time in minutes", ylab = " ",col=colorlist[1], ylim=c(0,1),yaxt='n', las = 1)
-for (i in 2:length(Dosage)){
-  lines(seq(0,dim(Prob.part.nofull.bf)[1]-1),Prob.part.nofull.bf[,i], col=colorlist[i])
+plot(seq(0,nrow(Probs.control)-1),Probs.control[,'Prob.part.notfull'],type = "l" ,
+     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1)
+temp = apply(PROBS.control$PROB.part.notfull, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1),Probs.low[,'Prob.part.notfull'],type = "l" ,
+      col=colors[2])
+temp = apply(PROBS.low$PROB.part.notfull, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1),Probs.high[,'Prob.part.notfull'],type = "l" ,
+      col=colors[3])
+temp = apply(PROBS.high$PROB.part.notfull, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
+
+
+for (jj in c(0,1,1.5)){
+  Ind = which(Dose == jj)
+  Probs.temp = Partial_Bloodfed[Ind]/Initial[Ind]
+  CIs = binom.confint(Partial_Bloodfed[Ind], Initial[Ind], methods = 'exact')[,c('lower', 'upper')] 
+  points(Time.min[Ind],Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
+  for( ii in 1:length(Time.min[Ind])){
+    lines(rep(Time.min[Ind][ii],2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
+  }
 }
-Ind = which(Dose == 0)
-points(Time.min[Ind],Partial_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==0)])
-Ind = which(Dose == 1)
-points(Time.min[Ind],Partial_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==1)])
-Ind = which(Dose == 1.5)
-points(Time.min[Ind],Partial_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==1.5)])
 
 mtext( bquote(bold("B")), side = 3, line = 0.1 ,at = 100,cex=1)
 mtext(side = 3, text = 'Partially blood-fed', line = 1.1, cex = .9, font = 4)
-legend('topright', c("control","SR dose 0.5" ,"SR dose 0.75", "SR dose 1.00", "SR dose 1.25", "SR dose 1.5"),
-       col=colorlist[c(seq(6))], lty=c(rep(1,6)), cex=.9, bty='n')  
+legend('topright', c("control","low" ,"high"),
+       col=colors, lty=c(rep(1,3)), cex=.9, bty='n')  
 
-plot(seq(0,dim(Prob.nobites.bf)[1]-1),Prob.nobites.bf[,1],type = "l" ,
-     xlab="time in minutes", ylab = " ",col=colorlist[1], ylim=c(0,1),yaxt='n', las = 1)
-for (i in 2:length(Dosage)){
-  lines(seq(0,dim(Prob.nobites.bf)[1]-1),Prob.nobites.bf[,i], col=colorlist[i])
+plot(seq(0,nrow(Probs.control)-1),Probs.control[,'Prob.nobites'],type = "l" ,
+     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1)
+temp = apply(PROBS.control$PROB.nobites, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1),Probs.low[,'Prob.nobites'],type = "l" ,
+      col=colors[2])
+temp = apply(PROBS.low$PROB.nobites, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1),Probs.high[,'Prob.nobites'],type = "l" ,
+      col=colors[3])
+temp = apply(PROBS.high$PROB.nobites, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
+
+
+for (jj in c(0,1,1.5)){
+  Ind = which(Dose == jj)
+  Probs.temp = Non_Bloodfed[Ind]/Initial[Ind]
+  CIs = binom.confint(Non_Bloodfed[Ind], Initial[Ind], methods = 'exact')[,c('lower', 'upper')] 
+  points(Time.min[Ind],Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
+  for( ii in 1:length(Time.min[Ind])){
+    lines(rep(Time.min[Ind][ii],2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
+  }
 }
-Ind = which(Dose == 0)
-points(Time.min[Ind],Non_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==0)])
-Ind = which(Dose == 1)
-points(Time.min[Ind],Non_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==1)])
-Ind = which(Dose == 1.5)
-points(Time.min[Ind],Non_Bloodfed[Ind]/Initial[Ind],pch=15, col = colorlist[which(Dosage==1.5)])
+
 
 mtext( bquote(bold("C")), side = 3, line = 0.1 ,at = 100,cex=1)
 mtext(side = 3, text = 'Unfed', line = 1.1, cex = .9, font = 4)

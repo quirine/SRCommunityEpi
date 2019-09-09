@@ -47,20 +47,16 @@ total.events.per.hut <- function(Data,releasehut){
     for (ii in index){
       Ind = which(Data$Rel_loc==releasehut & Data$Dose == 0 & Data[,ii]>0)
       plot(Data$Time[Ind],(rowSums(Data[Ind,c(ii,ii+4)])),col='black',ylim = c(0,6))
-      # lines(lowess(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)])), col='black', lwd = 2)
     }
   }
   else {
     for (ii in index){
       Ind = which(Data$Rel_loc==releasehut & Data$Dose == 0 & Data[,c(ii,ii+4)]>0)
       plot(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)]),col='black',ylim = c(0,6))
-      # lines(lowess(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)])), col='black', lwd = 2)
       Ind = which(Data$Rel_loc==releasehut & Data$Dose == 0.0625 & Data[,c(ii,ii+4)]>0)
       points(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)]),col='green')
-      # lines(lowess(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)])), col='green', lwd = 2)
       Ind = which(Data$Rel_loc==releasehut & Data$Dose == 0.125 & Data[,c(ii,ii+4)]>0)
       points(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)]),col='red')
-      # lines(lowess(Data$Time[Ind],rowSums(Data[Ind,c(ii,ii+4)])), col='red', lwd = 2)
     }
   }
 }
@@ -118,7 +114,6 @@ plotPost = function( paramSampleVec , credMass=0.95 , compVal=NULL ,
   mcmcDensity = density(paramSampleVec)
   postSummary[,"mode"] = mcmcDensity$x[which.max(mcmcDensity$y)]
   
-  # source("HDIofMCMC.R")
   HDI = HDIofMCMC( paramSampleVec , credMass )
   postSummary[,"hdiMass"]=credMass
   postSummary[,"hdiLow"]=HDI[1]

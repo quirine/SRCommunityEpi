@@ -6,7 +6,6 @@ get.TTE <- function(Data,dosage){
   
   for( j in 1:ng){
     TempDiff <- diff( Data[,1+j],lag = 1)
-    if(any(TempDiff>0)) message('Warning: There are zombie mosquitoes in your data!')
     TempDiff <- abs( TempDiff)
     TempN <- sum(TempDiff)
     Nums <- array(data = 0, dim= TempN)
@@ -24,7 +23,6 @@ get.TTE <- function(Data,dosage){
   
   for( j in 1:ng){
     TempDiff <- diff( Data[,9+j],lag = 1)
-    if(any(TempDiff>0)) message('Warning: There are zombie mosquitoes in your data!')
     TempDiff <- abs( TempDiff)
     TempN <- sum(TempDiff)
     Nums <- array(data = 0, dim= TempN)

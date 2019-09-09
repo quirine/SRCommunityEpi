@@ -24,7 +24,7 @@ ng = 6 # number of groups
 SR = c(0, rep(1,5))
 con.time = 1
 Initial = 125
-Dosages = c(0, 0.5, 0.75, 1, 1.25, 1.5)
+Dosages = c(0, 1, 1.5)
 num.samples = 1e4
 colorlist= colorRampPalette(c("lightcyan3", "darkorange","deeppink"))(length(Dosages))
 colorlist = c(rgb(0,0,0), colorlist)
@@ -32,8 +32,6 @@ colorlist = c(rgb(0,0,0), colorlist)
 # load and prepare data ---------------------------------------------------
 source('Longevity_PrepareData.R')
 parnames(binom.instant.kd) <- c("beta0", "beta1")
-I <- which(SurvSR$TTE > con.time)
-SurvSR.init = SurvSR[-I,]
 
 K <- numeric()
 for (ii in Dosages){
@@ -45,7 +43,7 @@ for (ii in Dosages){
 
 kd.dose <- mle2(minuslogl = binom.instant.kd, start = c( beta0 = -7.5, beta1 = -1), data = list(N = Initial, k = K, dose = Dosages))
 
-# save('kd.dose', file = 'Lethality.Instantaneous.RData')
+save('kd.dose', file = '../Input/Lethality.Instantaneous.RData')
 
 # Get confidence intervals of outcomes ------------------------------------
 

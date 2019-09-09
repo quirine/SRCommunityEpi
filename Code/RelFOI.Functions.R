@@ -40,16 +40,16 @@ Pies = function(C,rho,tau,q.t,q.u){
 }
 
 Biting.rate = function(C,rho,a.u,alpha,q.t,q.u){ 
-  prob.fail.t = exp( -( (a.u * ( alpha)) / q.t )  )
-  prob.fail.u = exp( -( a.u / q.u ))
+  prob.fail.t = (q.t) / ((a.u * alpha) + q.t )  
+  prob.fail.u = q.u / (a.u + q.u )
   D = C * rho + C * (1 - rho) * prob.fail.t + (1 - C) * prob.fail.u 
   geom.mean = D / ( 1 - D )           
   delta = ( tau * C * rho + 
-    (1/q.t  + tau) * (C * (1-rho) * prob.fail.t) +
-    (1/q.u + tau) * ((1-C) * prob.fail.u) ) / D
+              (1/q.t  + tau) * (C * (1-rho) * prob.fail.t) +
+              (1/q.u + tau) * ((1-C) * prob.fail.u) ) / D
   a = 1 / ( geom.mean * delta + 1/a.u) 
   return(a)
-
+  
 }
 
 
