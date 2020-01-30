@@ -17,7 +17,6 @@ library(mgcv)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # set to source file location (if working in RStudio)
 getwd()
 
-
 # Load source files -------------------------------------------------------
 source('BloodfeedingFunctions.R')
 source('LongevityFunctions.R')
@@ -191,89 +190,99 @@ pdf('Fig2.pdf',width=6,height=3)
 
 old.par <- par(mfrow=c(1,3),oma = c(5,4,4,2) + 0.1,
                mar = c(0,0,1,0) + 0.1)
-plot(seq(0,nrow(Probs.control)-1),Probs.control[,'Prob.full'],type = "l" ,
-     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1)
-temp = apply(PROBS.control$PROB.full, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+plot(seq(0,nrow(Probs.control)-1)/60,Probs.control[,'Prob.full'],type = "l" ,
+     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1, 
+     axes = F)
+box()
+Axis(side=1,at=seq(0,50,6))
+Axis(side = 2, at=seq(0,1,.2), las = 2)
 
-lines(seq(0,nrow(Probs.control)-1),Probs.low[,'Prob.full'],type = "l" ,
+temp = apply(PROBS.control$PROB.full, 1, HDIofMCMC)
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+
+lines(seq(0,nrow(Probs.control)-1)/60,Probs.low[,'Prob.full'],type = "l" ,
       col=colorlist[which(Dosage==1)])
 temp = apply(PROBS.low$PROB.full, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1)/60) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
 
-lines(seq(0,nrow(Probs.control)-1),Probs.high[,'Prob.full'],type = "l" ,
+lines(seq(0,nrow(Probs.control)-1)/60,Probs.high[,'Prob.full'],type = "l" ,
       col=colorlist[which(Dosage==1.5)])
 temp = apply(PROBS.high$PROB.full, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
 
 # add data
 for (jj in c(0,1,1.5)){
   Ind = which(Dose == jj)
   Probs.temp = Full_Bloodfed[Ind]/Initial[Ind]
   CIs = binom.confint(Full_Bloodfed[Ind], Initial[Ind], methods = 'exact')[,c('lower', 'upper')] 
-  points(Time.min[Ind],Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
+  points(Time.min[Ind]/60,Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
   for( ii in 1:length(Time.min[Ind])){
-    lines(rep(Time.min[Ind][ii],2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
+    lines(rep(Time.min[Ind][ii]/60,2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
   }
 }
 
 mtext( bquote(bold("A")), side = 3, line = 0.1 ,at = 100,cex=1)
 mtext(side = 3, text = 'Fully blood-fed', line = 1.1, cex = .9, font = 4)
 
-plot(seq(0,nrow(Probs.control)-1),Probs.control[,'Prob.part.notfull'],type = "l" ,
-     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1)
+plot(seq(0,nrow(Probs.control)-1)/60,Probs.control[,'Prob.part.notfull'],type = "l" ,
+     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1,
+     axes = F)
+box()
+Axis(side=1,at=seq(0,50,6))
 temp = apply(PROBS.control$PROB.part.notfull, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
 
-lines(seq(0,nrow(Probs.control)-1),Probs.low[,'Prob.part.notfull'],type = "l" ,
+lines(seq(0,nrow(Probs.control)-1)/60,Probs.low[,'Prob.part.notfull'],type = "l" ,
       col=colors[2])
 temp = apply(PROBS.low$PROB.part.notfull, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
 
-lines(seq(0,nrow(Probs.control)-1),Probs.high[,'Prob.part.notfull'],type = "l" ,
+lines(seq(0,nrow(Probs.control)-1)/60,Probs.high[,'Prob.part.notfull'],type = "l" ,
       col=colors[3])
 temp = apply(PROBS.high$PROB.part.notfull, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
 
 
 for (jj in c(0,1,1.5)){
   Ind = which(Dose == jj)
   Probs.temp = Partial_Bloodfed[Ind]/Initial[Ind]
   CIs = binom.confint(Partial_Bloodfed[Ind], Initial[Ind], methods = 'exact')[,c('lower', 'upper')] 
-  points(Time.min[Ind],Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
+  points(Time.min[Ind]/60,Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
   for( ii in 1:length(Time.min[Ind])){
-    lines(rep(Time.min[Ind][ii],2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
+    lines(rep(Time.min[Ind][ii]/60,2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
   }
 }
 
 mtext( bquote(bold("B")), side = 3, line = 0.1 ,at = 100,cex=1)
 mtext(side = 3, text = 'Partially blood-fed', line = 1.1, cex = .9, font = 4)
-legend('topright', c("control","low" ,"high"),
+legend('topleft', c("control","low" ,"high"),
        col=colors, lty=c(rep(1,3)), cex=.9, bty='n')  
 
-plot(seq(0,nrow(Probs.control)-1),Probs.control[,'Prob.nobites'],type = "l" ,
-     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1)
+plot(seq(0,nrow(Probs.control)-1)/60,Probs.control[,'Prob.nobites'],type = "l" ,
+     xlab="time in minutes", ylab="Probability ", col=colorlist[1], ylim=c(0,1), las = 1, axes = F)
+box()
+Axis(side=1,at=seq(0,50,6))
 temp = apply(PROBS.control$PROB.nobites, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('black',transparency), border = alpha('black',transparency)) 
 
-lines(seq(0,nrow(Probs.control)-1),Probs.low[,'Prob.nobites'],type = "l" ,
+lines(seq(0,nrow(Probs.control)-1)/60,Probs.low[,'Prob.nobites'],type = "l" ,
       col=colors[2])
 temp = apply(PROBS.low$PROB.nobites, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('darkorange',transparency), border = alpha('darkorange',transparency)) 
 
-lines(seq(0,nrow(Probs.control)-1),Probs.high[,'Prob.nobites'],type = "l" ,
+lines(seq(0,nrow(Probs.control)-1)/60,Probs.high[,'Prob.nobites'],type = "l" ,
       col=colors[3])
 temp = apply(PROBS.high$PROB.nobites, 1, HDIofMCMC)
-polygon(c(seq(0,nrow(Probs.control)-1),rev(seq(0,nrow(Probs.control)-1)) ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
+polygon(c(seq(0,nrow(Probs.control)-1)/60,rev(seq(0,nrow(Probs.control)-1))/60 ),c(temp[2,],rev(temp[1,])),col=alpha('deeppink',transparency), alpha('deeppink',transparency)) 
 
 
 for (jj in c(0,1,1.5)){
   Ind = which(Dose == jj)
   Probs.temp = Non_Bloodfed[Ind]/Initial[Ind]
   CIs = binom.confint(Non_Bloodfed[Ind], Initial[Ind], methods = 'exact')[,c('lower', 'upper')] 
-  points(Time.min[Ind],Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
+  points(Time.min[Ind]/60,Probs.temp,pch=15, col = colors[which(Dosage.small==jj)])
   for( ii in 1:length(Time.min[Ind])){
-    lines(rep(Time.min[Ind][ii],2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
+    lines(rep(Time.min[Ind][ii]/60,2),CIs[ii,],lwd = 1, col = colors[which(Dosage.small==jj)]) 
   }
 }
 
