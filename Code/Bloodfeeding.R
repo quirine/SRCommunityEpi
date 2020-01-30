@@ -221,7 +221,7 @@ for (jj in c(0,1,1.5)){
   }
 }
 
-mtext( bquote(bold("A")), side = 3, line = 0.1 ,at = 100,cex=1)
+mtext( bquote(bold("A")), side = 3, line = 0.1 ,at = 0,cex=1)
 mtext(side = 3, text = 'Fully blood-fed', line = 1.1, cex = .9, font = 4)
 
 plot(seq(0,nrow(Probs.control)-1)/60,Probs.control[,'Prob.part.notfull'],type = "l" ,
@@ -253,7 +253,7 @@ for (jj in c(0,1,1.5)){
   }
 }
 
-mtext( bquote(bold("B")), side = 3, line = 0.1 ,at = 100,cex=1)
+mtext( bquote(bold("B")), side = 3, line = 0.1 ,at = 0,cex=1)
 mtext(side = 3, text = 'Partially blood-fed', line = 1.1, cex = .9, font = 4)
 legend('topleft', c("control","low" ,"high"),
        col=colors, lty=c(rep(1,3)), cex=.9, bty='n')  
@@ -287,9 +287,9 @@ for (jj in c(0,1,1.5)){
 }
 
 
-mtext( bquote(bold("C")), side = 3, line = 0.1 ,at = 100,cex=1)
+mtext( bquote(bold("C")), side = 3, line = 0.1 ,at = 0,cex=1)
 mtext(side = 3, text = 'Unfed', line = 1.1, cex = .9, font = 4)
-mtext(side = 1, text = 'Time (min)', line = 2.25, cex = .9, outer = TRUE)
+mtext(side = 1, text = 'Time (hours)', line = 2.25, cex = .9, outer = TRUE)
 mtext(side = 2, text = 'Probability', line = 2.25, cex = .9, outer = TRUE)
 
 dev.off()
