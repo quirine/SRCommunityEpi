@@ -264,8 +264,7 @@ mtext('Mean FoI relative to baseline',2,line=1, outer = TRUE)
 
 dev.off()
 
-
-# Fig 4----------------------------------
+# Fig 4 (overlay)----------------------------------
 transparency = 0.5
 # Construct vectors that capture uncertainty by effect
 YLIMS = c(0,1.5)
@@ -309,71 +308,25 @@ mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 
 jj = jj + 1
 
 # biting and oviposition high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp,rel_foi(Coverages,mu=0,rho=0,Alpha[ii],tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='',ylim=YLIMS)
+plot.new()
 mtext(Names[2], side = 3, line = 1, cex = title.size, font = 4)
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # biting and instantaneous death high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp,rel_foi(Coverages,Mu[ii],rho=0,Alpha[ii],tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
+plot.new()
 mtext(Names[3], side = 3, line = 1, cex = title.size, font = 4)
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # biting and residual death high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp,rel_foi(Coverages,mu=0,rho=0,Alpha[ii],tau,q.t=q.u,q.u,G.T[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
+plot.new()
 mtext(Names[4], side = 3, line = 1, cex = title.size, font = 4)
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # biting and repellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho[ii],Alpha[ii],tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
+plot.new()
 mtext(Names[5], side = 3, line = 1, cex = title.size, font = 4)
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # biting and expellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,rho=0,Alpha[ii],tau,Q.t[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
+plot.new()
 mtext(Names[6], side = 3, line = 1, cex = title.size, font = 4)  
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
-
 # biting and oviposition
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
 temp = numeric()
@@ -384,6 +337,15 @@ temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
       type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='',ylim=YLIMS)
+
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,mu=0,rho=0,Alpha.h[ii],tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc.h[ii]))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha.h,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc.h),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='',ylim=YLIMS)
 mtext(Names[2], side = 2, line = 2.25, cex = title.size, font = 4)
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
@@ -405,7 +367,7 @@ temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 'deeppink')
 
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
 
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc.h),
       type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
@@ -413,54 +375,17 @@ mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 
 jj = jj + 1
 
 # oviposition and instantaneous death high dosage 
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp,rel_foi(Coverages,Mu[ii],rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # oviposition and residual death high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,G.T[ii],g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # oviposition and repellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho[ii],alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # oviposition and expellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS,xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,Q.t[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc[ii]))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
-
 # biting and instantaneous death
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
 temp = numeric()
@@ -470,10 +395,19 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,Mu.h[ii],rho=0,Alpha.h[ii],tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu.h,rho=0,alpha.h,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext(Names[3], side = 2, line = 2.25, cex = title.size, font = 4)
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
+
 # oviposition and instantaneous death 
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
 temp = numeric()
@@ -483,9 +417,18 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,Mu.h[ii],rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc.h[ii]))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu.h,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc.h),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
+
 # instantaneous death 
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1, bty = 'n')
 box(lwd=3) 
@@ -503,47 +446,20 @@ temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 'deeppink')
 
 lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
 lines(Coverages,rel_foi(Coverages,mu.h,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
       type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 
 # instantaneous death and residual death high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,Mu[ii],rho=0,alpha=1,tau,q.t=q.u,q.u,G.T[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # instantaneous death and repellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,Mu[ii],Rho[ii],alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu,rho,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # instantaneous death and expellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,Mu[ii],rho=0,alpha=1,tau,Q.t[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # biting and residual death
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
@@ -554,10 +470,19 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,mu=0,rho=0,Alpha.h[ii],tau,q.t=q.u,q.u,G.T.h[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha.h,tau,q.t=q.u,q.u,g.t.h,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext(Names[4], side = 2, line = 2.25, cex = title.size, font = 4)
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
+
 # oviposition and residual death
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
 temp = numeric()
@@ -567,7 +492,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,G.T.h[ii],g.u,g.u*g.tau.scaler,gc,Alpha.gc.h[ii]))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t.h,g.u,g.u*g.tau.scaler,gc,alpha.gc.h),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # instantaneous death and residual death
@@ -579,7 +512,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,Mu.h[ii],rho=0,alpha=1,tau,q.t=q.u,q.u,G.T.h[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu.h,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t.h,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # residual death
@@ -599,34 +540,16 @@ temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 'deeppink')
 
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.t=q.u,q.u,g.t.h,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
       type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # residual death and repellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho[ii],alpha=1,tau,q.t=q.u,q.u,G.T[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # residual death and expellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS,xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,Q.t[ii]*q.u,q.u,G.T[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.u*q.t.scaler,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
+plot.new()
 jj = jj + 1
 # biting and repellency
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS, xaxt='n',pty='s',xaxs='i',yaxs='i',las=1)
@@ -637,7 +560,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho.h[ii],Alpha.h[ii],tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho.h,alpha.h,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext(Names[5], side = 2, line = 2.25, cex = title.size, font = 4)
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
@@ -650,7 +581,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho.h[ii],alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc.h[ii]))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho.h,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc.h),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # instantaneous death and repellency
@@ -662,7 +601,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu,rho,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,Mu.h[ii],Rho.h[ii],alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu.h,rho.h,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # residual death and repellency
@@ -674,7 +621,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha=1,tau,q.t=q.u,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho.h[ii],alpha=1,tau,q.t=q.u,q.u,G.T.h[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho.h,alpha=1,tau,q.t=q.u,q.u,g.t.h,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # repellency
@@ -693,22 +648,12 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 'deeppink')
 lines(Coverages,rel_foi(Coverages,mu=0,rho.h,alpha=1,tau,q.t=q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
-mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
-jj = jj + 1
-# repellency and expellency high dosage
-plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS,xaxt='n',yaxt ='n',pty='s',xaxs='i',yaxs='i',las=1)
-temp = numeric()
-for( ii in 1:num.draws){     
-  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho[ii],alpha=1,tau,Q.t[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
-}
-temp = temp[order(temp[,cov.index]),]
-polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
-lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha=1,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
       type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
-
+# repellency and expellency high dosage
+plot.new()
+jj = jj + 1
 # biting and expellency
 plot(1, type="n", xlab="", ylab="", xlim=c(0, 1), ylim=YLIMS,pty='s',xaxs='i',yaxs='i',las=1)
 temp = numeric()
@@ -718,7 +663,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,rho=0,Alpha.h[ii],tau,Q.t.h[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha.h,tau,q.u*q.t.scaler.h,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext(Names[6], side = 2, line = 2.25, cex = title.size, font = 4)
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
@@ -731,7 +684,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,Q.t.h[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,Alpha.gc.h[ii]))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.u*q.t.scaler.h,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc.h),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # instantaneous death and expellency
@@ -743,7 +704,15 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu,rho=0,alpha=1,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,Mu.h[ii],rho=0,alpha=1,tau,Q.t.h[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu.h,rho=0,alpha=1,tau,q.u*q.t.scaler.h,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # residual death and expellency
@@ -755,7 +724,16 @@ for( ii in 1:num.draws){
 temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.u*q.t.scaler,q.u,g.t,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
-     type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+      type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,Q.t.h[ii]*q.u,q.u,G.T.h[ii],g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho=0,alpha=1,tau,q.u*q.t.scaler.h,q.u,g.t.h,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
+
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # repellency and expellency
@@ -768,6 +746,14 @@ temp = temp[order(temp[,cov.index]),]
 polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('darkorange',transparency), border = 'darkorange')
 lines(Coverages,rel_foi(Coverages,mu=0,rho,alpha=1,tau,q.u*q.t.scaler,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
       type = 'l',col='darkorange',lwd=line.weight,xlab='',ylab='')
+temp = numeric()
+for( ii in 1:num.draws){     
+  temp = rbind(temp, rel_foi(Coverages,mu=0,Rho.h[ii],alpha=1,tau,Q.t.h[ii]*q.u,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1))
+}
+temp = temp[order(temp[,cov.index]),]
+polygon(c(Coverages, rev(Coverages)),c(temp[index.l,],rev(temp[index.h,]) ), col=alpha('deeppink',transparency), border = 0)
+lines(Coverages,rel_foi(Coverages,mu=0,rho.h,alpha=1,tau,q.u*q.t.scaler.h,q.u,g.t=g.u,g.u,g.u*g.tau.scaler,gc,alpha.gc=1),
+      type = 'l',col='deeppink',lwd=line.weight,xlab='',ylab='')
 mtext((paste0(LETTERS[floor(jj/6)+1],letters[(jj%%6)+1])), side = 3, line = 0.1 ,at = 0.1,cex=letter.size, font = 4)
 jj = jj + 1
 # expellency
